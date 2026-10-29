@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7HEAVENPURPLE - Voting Certificate Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        body {
+            background-color: #120024;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        h1 { margin-bottom: 5px; color: #d8b4fe; font-size: 22px; text-align: center; }
+        p.subtitle { margin-bottom: 15px; color: #a855f7; font-size: 13px; text-align: center; }
+
+        .control-panel {
+            background: #1e0936;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #7e22ce;
+            width: 100%;
+            max-width: 360px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        label { font-size: 12px; font-weight: 600; color: #e9d5ff; }
+        input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #a855f7;
+            background: #0f051d;
+            color: #fff;
+            font-size: 13px;
+        }
+
+        .btn-download {
+            background: linear-gradient(45deg, #9333ea, #c084fc);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-download:hover { opacity: 0.9; }
+
+        /* UKURAN KANVAS UTAMA (Rasio 9:16) */
+        #certificate-area {
+            position: relative;
+            width: 340px;
+            height: 604px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(168, 85, 247, 0.4);
+            background: #000;
+        }
+
+        /* FOTO USER DI LAYER BAWAH */
+        #uploaded-photo {
+            position: absolute;
+            top: 72px;
+            left: 24px;
+            width: 292px;
+            height: 485px;
+            object-fit: cover;
+            z-index: 1;
+            display: none;
+        }
+
+        /* TEKS PANDUAN SEBELUM UPLOAD */
+        #placeholder-text {
+            position: absolute;
+            top: 72px;
+            left: 24px;
+            width: 292px;
+            height: 485px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px dashed #ff477e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #ff8fab;
+            font-size: 12px;
+            padding: 20px;
+            z-index: 2;
+        }
+
+        /* KOTAK PENUTUP ATAS (UNTUK IKLAN/BANNER) */
+        .cover-top {
+            position: absolute;
+            top: 72px;
+            left: 24px;
+            width: 292px;
+            height: 65px;
+            background: #ffffff;
+            z-index: 2;
+            display: none;
+        }
+
+        /* BINGKAI MERAH DI LAYER ATAS (MEMAKAI NAMA FILE DARI GITHUB KAMU) */
+        #background-frame {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 4;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>7HEAVENPURPLE</h1>
+    <p class="subtitle">BTS Certificate Generator</p>
+
+    <div class="control-panel">
+        <div>
+            <label for="imageUpload">Pilih Screenshot Bukti Voting:</label>
+            <input type="file" id="imageUpload" accept="image/*" onchange="previewImage(event)">
+        </div>
+        <button class="btn-download" onclick="downloadCertificate()">Save Image 💜</button>
+    </div>
+
+    <div id="certificate-area">
+        <div id="placeholder-text">
+            <span>Upload screenshot voting kamu di sini! 📸</span>
+        </div>
+
+        <div id="coverTop" class="cover-top"></div>
+        <img id="uploaded-photo" src="" alt="Bukti Voting">
+
+        <!-- NAMA FILE BINGKAI DIBAWAH INI SUDAH DISAMAKAN DENGAN FILE KAMU DI GITHUB -->
+        <img id="background-frame" src="Desain tanpa judul_20261029_074912_0000.png" alt="Bingkai Template">
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                const photo = document.getElementById('uploaded-photo');
+                const placeholder = document.getElementById('placeholder-text');
+                const coverTop = document.getElementById('coverTop');
+                
+                photo.src = reader.result;
+                photo.style.display = 'block';
+                placeholder.style.display = 'none';
+                coverTop.style.display = 'block';
+            }
+            if (event.target.files[0]) {
+                reader.readAsDataURL(event.target.files[0]);
+            }
+        }
+
+        function downloadCertificate() {
+            const photo = document.getElementById('uploaded-photo');
+            if (photo.style.display === 'none') {
+                alert('Silakan upload foto bukti voting terlebih dahulu!');
+                return;
+            }
+
+            const certArea = document.getElementById('certificate-area');
+            html2canvas(certArea, {
+                useCORS: true,
+                scale: 2
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = '7HEAVENPURPLE_Certificate.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
